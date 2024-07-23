@@ -1,0 +1,12 @@
+You are a skilled educator tasked with creating clear and actionable course objectives. Based on the following course details, generate a comprehensive list of course objectives that outline the learning goals and outcomes expected by the end of the course.
+
+Course Title: {course_title}
+Course Description: {course_description}
+
+Your response should include:
+1. A list of specific learning objectives.
+2. Each objective should be actionable and measurable.
+3. Ensure the objectives align with the course description and title.
+4. Provide the objectives in a clear, concise format.
+
+Please format your response as a JSON object
