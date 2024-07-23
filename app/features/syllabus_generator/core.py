@@ -1,28 +1,33 @@
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders.text import TextLoader
-from app.services.tool_registry import ToolFile
-from services.logger import setup_logger
-from app.features.syllabus_generator.tools import SyllabusBuilder
-from app.api.error_utilities import LoaderError, ToolExecutorError
+from app.services.logger import setup_logger
+from app.features.syllabus_generator.tools import CourseObjectivesBuilder  
 
 logger = setup_logger()
 
 
-def executor(subject: str, grade_level: str, verbose=True, **kwargs):
+# TEMPLATE, NEEDS TO BE DISCUSSED AND FORMED ON MONDAY
+def executor(
+    course_title: str,
+    course_description: str,
+    verbose=False,
+    *args,
+    **kwargs,
+):
     try:
         if verbose:
-            logger.debug(f"Subject: {subject}, grade_level: {grade_level}")
+            logger.debug(f"Course Title: {course_title}, Course Description: {course_description}")
 
-        # Create and return the quiz questions
-        output = SyllabusBuilder(
-            subject, grade_level, verbose=verbose
-        ).create_syllabus()
-        print(output)
+        course_objectives_builder = CourseObjectivesBuilder(
+            course_title=course_title,
+            course_description=course_description,
+            verbose=verbose
+        )
 
-    except LoaderError as e:
-        error_message = e
-        logger.error(f"Error in RAGPipeline -> {error_message}")
-        raise ToolExecutorError(error_message.message)
+        # Generate course objectives
+        output = course_objectives_builder.generate_course_objectives()
+
+        if verbose:
+            logger.info("Course objectives generated successfully")
+            logger.info(f"Course Objectives: {output}")
 
     except Exception as e:
         error_message = f"Error in executor: {e}"
@@ -31,6 +36,10 @@ def executor(subject: str, grade_level: str, verbose=True, **kwargs):
 
     return output
 
-
 if __name__ == "__main__":
-    executor(subject="Multiplication", grade_level="K12")
+    # Example call to executor
+    executor(
+        course_title="Linear Algebra",
+        course_description="A basic course on the core concepts of Linear Algebra.",
+        verbose=True
+    )
