@@ -3,7 +3,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_google_genai import GoogleGenerativeAI
 from app.services.logger import setup_logger
 import os
-os.environ['GOOGLE_API_KEY'] = 'AIzaSyCSkuWtue2pCRrqkDcpimzpm5IeO_dkGWQ'
+os.environ['GOOGLE_API_KEY'] = ' '
 
 
 logger = setup_logger(__name__)
