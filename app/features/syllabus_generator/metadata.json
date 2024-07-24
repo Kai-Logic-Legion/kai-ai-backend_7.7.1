@@ -9,6 +9,16 @@
             "label": "Grade Level",
             "name": "grade_level",
             "type": "text"
+        },
+        {
+            "label": "Course Title",
+            "name": "course_title",
+            "type": "text"
+        },
+        {
+            "label": "Course Description",
+            "name": "course_description",
+            "type": "text"
         }
     ]
 }
