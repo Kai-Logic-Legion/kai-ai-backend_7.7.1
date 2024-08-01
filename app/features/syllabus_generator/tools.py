@@ -1,11 +1,13 @@
 import os
 import sys
+import json
 from typing import Dict, List
 
 from app.services.logger import setup_logger
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import GoogleGenerativeAI
+from langchain_core.runnables import RunnablePassthrough, RunnableParallel
 from pydantic import BaseModel, Field, ValidationError
 from langchain_community.retrievers import TavilySearchAPIRetriever
 # os.chdir("./app")
@@ -132,7 +134,17 @@ class SyllabusBuilder:
         else:
             raise ValueError(f"Invalid compile type: {type}")
 
-        chain = prompt |self.retriever| self.model | self.parser
+        retriever = self.retriever
+
+        runner = RunnableParallel(
+            {"context": retriever, "subject": RunnablePassthrough(),"grade_level": RunnablePassthrough(),"grade_level_assessments": RunnablePassthrough(),"course_overview": RunnablePassthrough(),"customisation": RunnablePassthrough()}
+        )
+
+        # Log the inputs to the retriever for debugging
+        if self.verbose:
+            print(f"Inputs to the retriever: {json.dumps(runner, indent=2)}")
+
+        chain = runner | prompt | self.model | self.parser
 
         if self.verbose:
             logger.info("Chain compilation complete")
