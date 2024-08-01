@@ -7,7 +7,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import GoogleGenerativeAI
 from pydantic import BaseModel, Field, ValidationError
-
+from langchain_community.retrievers import TavilySearchAPIRetriever
 # os.chdir("./app")
 # sys.path.append(os.getcwd())
 
@@ -21,7 +21,22 @@ def read_text_file(file_path: str) -> str:
     with open(absolute_file_path, "r") as file:
         return file.read()
 
+class RAGpipeline:
+    def __init__(self, retriever=None, verbose=False):
+        default_config = {
+            "retriever": TavilySearchAPIRetriever(k=3),
+        }
+        self.retriever = retriever or default_config["retriever"]
+        self.verbose = verbose
 
+    def load_text(self, text: str):
+        """Load text and return it as a document."""
+        return text
+
+    def compile(self):
+        if self.verbose:
+            print(f"Pipeline compilation complete")
+        return self.retriever
 class SyllabusBuilder:
     def __init__(
         self,
@@ -32,18 +47,23 @@ class SyllabusBuilder:
         prompt: str = "",
         model=None,
         parser=None,
+        retriever=None,
         verbose: bool = False,
     ):
         """Initialize SyllabusBuilder with default configurations."""
+        self.verbose = verbose
+        self.pipeline = RAGpipeline(verbose=verbose)
         default_config = {
             "model": GoogleGenerativeAI(model="gemini-1.0-pro"),
             "parser": JsonOutputParser(pydantic_object=SyllabusModel),
             "prompt": read_text_file("prompt/syllabus_prompt.txt"),
+            "retriever": self.pipeline.compile(),
         }
 
         self.prompt = prompt or default_config["prompt"]
         self.model = model or default_config["model"]
         self.parser = parser or default_config["parser"]
+        self.retriever = retriever or default_config["retriever"]
         self.grade_level_assessments = ""
         self.customisation = customisation
 
@@ -112,7 +132,7 @@ class SyllabusBuilder:
         else:
             raise ValueError(f"Invalid compile type: {type}")
 
-        chain = prompt | self.model | self.parser
+        chain = prompt |self.retriever| self.model | self.parser
 
         if self.verbose:
             logger.info("Chain compilation complete")
