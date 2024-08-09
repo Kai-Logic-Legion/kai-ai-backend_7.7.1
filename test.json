@@ -11,27 +11,6 @@
             "inputs": [
                 {
                     "name": "subject",
-                    "value": "Multiplication"
-                },
-                {
-                    "name": "grade_level",
-                    "value": "Kindergarten"
-                }
-            ]
-        }
-    },
-    {
-        "user": {
-            "id": "string",
-            "fullName": "string",
-            "email": "string"
-        },
-        "type": "tool",
-        "tool_data": {
-            "tool_id": 2,
-            "inputs": [
-                {
-                    "name": "subject",
                     "value": "Data Structures"
                 },
                 {
@@ -45,6 +24,12 @@
                 {
                     "name": "customisation",
                     "value": "I want the course to require proficiency in Python"
+                },
+                {
+                    "name": "options",
+                    "value": [
+                        "all"
+                    ]
                 }
             ]
         }

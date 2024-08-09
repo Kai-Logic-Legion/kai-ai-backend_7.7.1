@@ -6,6 +6,7 @@ from services.logger import setup_logger
 from app.features.syllabus_generator.tools import SyllabusBuilder
 from app.api.error_utilities import LoaderError, ToolExecutorError
 from dotenv import load_dotenv
+import traceback
 
 logger = setup_logger()
 
@@ -50,6 +51,7 @@ def executor(
         raise ValueError(f"Error creating syllabus: {e}")
 
     except Exception as e:
+        traceback.print_exc()
         error_message = f"Error in executor: {e}"
         logger.error(error_message)
         raise ValueError(error_message)
