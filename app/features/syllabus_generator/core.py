@@ -1,33 +1,34 @@
 from typing import List
+from features.syllabus_generator.schema import ExecutorInput
 from services.logger import setup_logger
 from app.features.syllabus_generator.tools import SyllabusBuilder
 from app.api.error_utilities import LoaderError, ToolExecutorError
+from pydantic import ValidationError
 
 logger = setup_logger()
 
 
 def executor(
-    subject: str,
-    grade_level: str,
-    course_overview: str,
-    customisation: str,
-    options: List[str],
+    input_args: ExecutorInput,
     verbose: bool = True,
-    **kwargs,
 ):
+    logger.error(f"here {list(input_args.items())}")
     """Execute the syllabus generation process."""
     try:
         if verbose:
             logger.debug(
-                f"Subject: {subject}, Grade Level: {grade_level}, Course Overview: {course_overview}"
+                f"Subject: {input_args.subject}, Grade Level: {input_args.grade_level}, Course Overview: {input_args.course_overview}"
             )
 
+        logger.info("second", str(input_args))
+        input_args = ExecutorInput(**input_args)
+
         sb = SyllabusBuilder(
-            subject,
-            grade_level,
-            course_overview,
-            customisation,
-            options,
+            input_args.subject,
+            input_args.grade_level,
+            input_args.course_overview,
+            input_args.customisation,
+            input_args.options,
             verbose=verbose,
         )
         syllabus = sb.create_syllabus()
@@ -40,9 +41,15 @@ def executor(
         logger.error(error_message)
         raise ToolExecutorError(error_message)
 
+    except ValidationError as e:
+        error_message = f"Error validating input: {e}"
+        logger.error(error_message)
+        raise ValueError(error_message)
+
     except ValueError as e:
-        logger.error(f"Error creating syllabus: {e}")
-        raise ValueError(f"Error creating syllabus: {e}")
+        error_message = f"Error creating syllabus: {e}"
+        logger.error(error_message)
+        raise ValueError(error_message)
 
     except Exception as e:
         error_message = f"Error in executor: {e}"

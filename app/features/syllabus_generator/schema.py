@@ -3,6 +3,18 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class ExecutorInput(BaseModel):
+    """
+    Specifically for executor function in syllabus core.py
+    """
+
+    subject: str
+    grade_level: str
+    course_overview: str
+    customisation: str
+    options: List[str]
+
+
 class SyllabusModel(BaseModel):
     title: Optional[str] = Field(description="The title for the whole course")
     overview: Optional[str] = Field(
